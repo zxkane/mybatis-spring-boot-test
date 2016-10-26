@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.cn.zbb.dao.DmClassInfoDao" >
+  <resultMap id="BaseResultMap" type="com.cn.zbb.model.DmClassInfo" >
+    <id column="DMCI_ID" property="dmciId" jdbcType="INTEGER" />
+    <result column="DMCI_Class_Name" property="dmciClassName" jdbcType="VARCHAR" />
+    <result column="DMCI_Teacher_ID" property="dmciTeacherId" jdbcType="INTEGER" />
+    <result column="DMCI_Remark" property="dmciRemark" jdbcType="VARCHAR" />
+    <result column="DMCI_School_ID" property="dmciSchoolId" jdbcType="INTEGER" />
+    <result column="DMCI_Grade_Name" property="dmciGradeName" jdbcType="VARCHAR" />
+    <result column="DMCI_Grade_Type" property="dmciGradeType" jdbcType="VARCHAR" />
+    <result column="DMCI_Update_Time" property="dmciUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="DMCI_GUID" property="dmciGuid" jdbcType="VARCHAR" />
+    <collection property="teacher" ofType="com.cn.zbb.model.DmTeacherInfo">
+    	<id column="DMTI_ID" property="dmtiId" jdbcType="INTEGER" />
+    	<result column="DMTI_Teacher_Name" property="dmtiTeacherName" jdbcType="VARCHAR" />
+    	<result column="DMTI_Sex" property="dmtiSex" jdbcType="VARCHAR" />
+    	<result column="DMTI_ID_Number" property="dmtiIdNumber" jdbcType="VARCHAR" />
+    	<result column="DMTI_Home_Address" property="dmtiHomeAddress" jdbcType="VARCHAR" />
+    	<result column="DMTI_Telephone" property="dmtiTelephone" jdbcType="VARCHAR" />
+    	<result column="DMTI_Mailbox" property="dmtiMailbox" jdbcType="VARCHAR" />
+    	<result column="DMTI_Education" property="dmtiEducation" jdbcType="VARCHAR" />
+    	<result column="DMTI_QQ" property="dmtiQq" jdbcType="VARCHAR" />
+    	<result column="DMTI_State" property="dmtiState" jdbcType="VARCHAR" />
+    	<result column="DMTI_School_ID" property="dmtiSchoolId" jdbcType="INTEGER" />
+    	<result column="DMTI_Update_Time" property="dmtiUpdateTime" jdbcType="TIMESTAMP" />
+    	<result column="DMTI_GUID" property="dmtiGuid" jdbcType="VARCHAR" />
+    </collection>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    DMCI_ID, DMCI_Class_Name, DMCI_Teacher_ID, DMCI_Remark, DMCI_School_ID, DMCI_Grade_Name, DMCI_Grade_Type, DMCI_Update_Time, DMCI_GUID
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from dm_class_info
+    where DMCI_ID = #{dmciId,jdbcType=INTEGER}
+  </select>
+  <select id="getClassInfoBySchoolId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  	select
+  	<include refid="Base_Column_List" />
+  	from dm_class_info
+  	where DMCI_School_ID = #{dmciSchoolId,jdbcType=INTEGER}
+  </select>
+  
+    <select id="getTeacherClassListByClassId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  	select c.*,tc.*,t.* from dm_class_info c left join dm_teacher_class tc on c.DMCI_ID=tc.DMTC_Class_ID left join dm_teacher_info t on tc.DMTC_Teacher_ID=t.DMTI_ID 
+  	where c.DMCI_ID=#{dmtcClassId,jdbcType=INTEGER}
+  </select>
+  
+  
+  
+   <select id="getHeadTeacherInfoBySchoolId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  	select * from dm_class_info ci left join dm_teacher_info ti on ci.DMCI_Teacher_ID=ti.DMTI_ID 
+  	where  ci.DMCI_School_ID=#{dmciSchoolId,jdbcType=INTEGER}
+  </select>
+  
+  
+   <select id="getHeadTeacherBySchoolId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+<!--   	select DISTINCT(ti.DMTI_ID),ti.* from dm_class_info ci left join dm_teacher_info ti on ci.DMCI_Teacher_ID=ti.DMTI_ID 
+  	where  ci.DMCI_School_ID=#{dmciSchoolId,jdbcType=INTEGER} -->
+  	  SELECT 
+    r.*,ru.*,t.*
+    FROM dm_teacher_info ti INNER JOIN  sb_role r ON ti.DMTI_ID=r.SBRL_ROLE_ID LEFT JOIN sb_role_user ru ON r.SBRL_ROLE_ID=ru.SBRU_ROLE_ID  LEFT JOIN dm_teacher_info t  ON  ru.SBRU_USER_ID=t.DMTI_ID
+    WHERE ti.DMTI_School_ID= #{dmciSchoolId,jdbcType=INTEGER} AND r.SBRL_ROLE_ID=1 
+  	
+  </select>
+  
+  
+  
+   <select id="getteacherByClassId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  	SELECT * from dm_class_info c left join dm_teacher_info t on c.DMCI_Teacher_ID=t.DMTI_ID
+  	where c.DMCI_ID=#{dmciid,jdbcType=INTEGER}
+  </select>
+  
+  
+   <select id="getTeacherInfoBySchoolId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+  	select * from dm_class_info ci right join dm_teacher_class tc on ci.DMCI_ID=tc.DMTC_Class_ID left join dm_teacher_info ti ON tc.DMTC_Teacher_ID=ti.DMTI_ID 
+  	where  ci.DMCI_School_ID=#{dmciSchoolId,jdbcType=INTEGER}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from dm_class_info
+    where DMCI_ID = #{dmciId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.cn.zbb.model.DmClassInfo" >
+    insert into dm_class_info (DMCI_ID, DMCI_Class_Name, DMCI_Teacher_ID, 
+      DMCI_Remark, DMCI_School_ID, DMCI_Grade_Name, DMCI_Grade_Type, DMCI_Update_Time, DMCI_GUID
+      )
+    values (#{dmciId,jdbcType=INTEGER}, #{dmciClassName,jdbcType=VARCHAR}, #{dmciTeacherId,jdbcType=INTEGER}, 
+      #{dmciRemark,jdbcType=VARCHAR}, #{dmciSchoolId,jdbcType=INTEGER}, 
+      #{dmciGradeName,jdbcType=VARCHAR}, #{dmciGradeType,jdbcType=VARCHAR}, #{dmciUpdateTime,jdbcType=TIMESTAMP},
+       #{dmciGuid,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.cn.zbb.model.DmClassInfo"  useGeneratedKeys="true" keyProperty="dmciId">
+    insert into dm_class_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="dmciId != null" >
+        DMCI_ID,
+      </if>
+      <if test="dmciClassName != null" >
+        DMCI_Class_Name,
+      </if>
+      <if test="dmciTeacherId != null" >
+        DMCI_Teacher_ID,
+      </if>
+      <if test="dmciRemark != null" >
+        DMCI_Remark,
+      </if>
+      <if test="dmciSchoolId != null" >
+        DMCI_School_ID,
+      </if>
+      <if test="dmciGradeName != null" >
+        DMCI_Grade_Name,
+      </if>
+      <if test="dmciGradeType != null" >
+        DMCI_Grade_Type,
+      </if>
+      <if test="dmciUpdateTime != null" >
+        DMCI_Update_Time,
+      </if>
+      <if test="dmciGuid != null" >
+        DMCI_GUID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="dmciId != null" >
+        #{dmciId,jdbcType=INTEGER},
+      </if>
+      <if test="dmciClassName != null" >
+        #{dmciClassName,jdbcType=VARCHAR},
+      </if>
+      <if test="dmciTeacherId != null" >
+        #{dmciTeacherId,jdbcType=INTEGER},
+      </if>
+      <if test="dmciRemark != null" >
+        #{dmciRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="dmciSchoolId != null" >
+        #{dmciSchoolId,jdbcType=INTEGER},
+      </if>
+      <if test="dmciGradeName != null" >
+        #{dmciGradeName,jdbcType=VARCHAR},
+      </if>      
+      <if test="dmciGradeType != null" >
+        #{dmciGradeType,jdbcType=VARCHAR},
+      </if>
+      <if test="dmciUpdateTime != null" >
+        #{dmciUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dmciGuid != null" >
+        #{dmciGuid,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.cn.zbb.model.DmClassInfo" >
+    update dm_class_info
+    <set >
+      <if test="dmciClassName != null" >
+        DMCI_Class_Name = #{dmciClassName,jdbcType=VARCHAR},
+      </if>
+      <if test="dmciTeacherId != null" >
+        DMCI_Teacher_ID = #{dmciTeacherId,jdbcType=INTEGER},
+      </if>
+      <if test="dmciRemark != null" >
+        DMCI_Remark = #{dmciRemark,jdbcType=VARCHAR},
+      </if>
+      <if test="dmciSchoolId != null" >
+        DMCI_School_ID = #{dmciSchoolId,jdbcType=INTEGER},
+      </if>
+      <if test="dmciGradeName != null" >
+        DMCI_Grade_Name = #{dmciGradeName,jdbcType=VARCHAR},
+      </if>
+      <if test="dmciGradeType != null" >
+        DMCI_Grade_Type = #{dmciGradeType,jdbcType=VARCHAR},
+      </if>
+      <if test="dmciUpdateTime != null" >
+        DMCI_Update_Time = #{dmciUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="dmciGuid != null" >
+        DMCI_GUID = #{dmciGuid,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where DMCI_ID = #{dmciId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.cn.zbb.model.DmClassInfo" >
+    update dm_class_info
+    set DMCI_Class_Name = #{dmciClassName,jdbcType=VARCHAR},
+      DMCI_Teacher_ID = #{dmciTeacherId,jdbcType=INTEGER},
+      DMCI_Remark = #{dmciRemark,jdbcType=VARCHAR},
+      DMCI_School_ID = #{dmciSchoolId,jdbcType=INTEGER},
+      DMCI_Grade_Name = #{dmciGradeName,jdbcType=VARCHAR},
+      DMCI_Grade_Type = #{dmciGradeType,jdbcType=VARCHAR},
+      DMCI_Update_Time = #{dmciUpdateTime,jdbcType=TIMESTAMP},
+      DMCI_GUID = #{dmciGuid,jdbcType=VARCHAR}
+    where DMCI_ID = #{dmciId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByGUID" parameterType="com.cn.zbb.model.DmClassInfo" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from dm_class_info
+  	where DMCI_GUID = #{dmciGuid,jdbcType=VARCHAR} 
+  	<if test="dmciClassName != null and dmciGradeName != null and dmciGradeType !=null and dmciSchoolId !=null" >
+        or (DMCI_Class_Name = #{dmciClassName,jdbcType=VARCHAR} and DMCI_Grade_Name = #{dmciGradeName,jdbcType=VARCHAR} 
+        	and DMCI_Grade_Type = #{dmciGradeType,jdbcType=VARCHAR} and DMCI_School_ID = #{dmciSchoolId,jdbcType=INTEGER})
+    </if>
+  </select>
+</mapper>

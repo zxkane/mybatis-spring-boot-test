@@ -1,0 +1,15 @@
+spring:
+  profiles.active: development
+  jackson.serialization.WRITE_DATES_AS_TIMESTAMPS: true
+server:
+  port: 8000
+
+mybatis:
+  typeAliasesPackage: com.cn.zbb.model
+  mapperLocations: classpath*:**/mapping/*.xml
+
+---
+spring:
+  profiles: development
+  datasource:
+    schema: import.sql

@@ -1,0 +1,16 @@
+/bin/
+.gradle/
+build/
+.classpath
+.project
+.java-version
+src/main/resources/static/*
+zbb*.log*
+src/main/resources/rebel.xml
+.gradletasknamecache
+rebel.xml
+.idea/
+wechat.iml
+wechat.ipr
+wechat.iws
+zbb.iml
